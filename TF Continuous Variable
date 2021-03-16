@@ -1,0 +1,33 @@
+# how to use NN to predict continuous variable
+
+import tensorflow as tf
+import random
+import numpy as np
+
+x_train = np.array([[0, 1, 2, 3, 4, 5, 6, 7, 8]])
+# y_train = np.array([[3, 4, 5, 6, 7, 8, 9, 10, 11]])
+y_train = np.array([[0, 2, 4, 6, 8, 10, 12, 14, 16]])
+
+W = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+b = tf.Variable(tf.zeros([1]))
+X = tf.placeholder(tf.float32, [1, None])
+Y = tf.placeholder(tf.float32, [1, None])
+
+y_predict = W * X + b
+
+loss = tf.reduce_mean(tf.square(y_predict - Y))
+optimizer = tf.train.GradientDescentOptimizer(0.01)
+train = optimizer.minimize(loss)
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+for step in range(1000):
+    sess.run(train, feed_dict={X:x_train, Y:y_train})
+    if step % 5 == 0:
+        print "Step:", step, "Loss:", sess.run(loss, feed_dict={Y: y_train, X:x_train})
+        print ""
+
+x_verify = np.array([[10, 11, 2, 3]])
+print sess.run(y_predict, feed_dict={X:x_verify})
